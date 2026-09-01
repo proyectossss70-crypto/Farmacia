@@ -86,6 +86,7 @@ td .row-btn { padding: .3rem .55rem; font-size: .8rem; margin-left: .3rem; }
 
 /* MODAL */
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: grid; place-items: center; padding: 1rem; z-index: 50; }
+.modal[hidden] { display: none; }
 .modal-card { background: #fff; border-radius: 14px; padding: 1.5rem; width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto; }
 .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
 #modal-form .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
