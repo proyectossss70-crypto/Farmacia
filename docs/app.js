@@ -118,7 +118,8 @@ onAuthStateChanged(auth, async (user) => {
       dashboard: true, inventario: !!PERM.inventario, reportes: !!PERM.reportes,
       usuarios: !!PERM.usuarios, configuracion: !!PERM.config,
     };
-    $$('#nav a').forEach((a) => a.classList.toggle('hidden', !vis[a.dataset.view]));
+    $$('#nav > a').forEach((a) => a.classList.toggle('hidden', !vis[a.dataset.view]));
+    if (!vis.reportes && $('#nav-informes-sub')) $('#nav-informes-sub').hidden = true;
     showCargando('Cargando tu información');
     MESES = await getMeses();
     await navigate('dashboard');
@@ -153,9 +154,26 @@ $('#login-form').addEventListener('submit', async (e) => {
 ['#logout', '#logout-m'].forEach((s) => $(s) && $(s).addEventListener('click', () => signOut(auth)));
 
 // ---------- navegación ----------
-$$('#nav a').forEach((a) => a.addEventListener('click', () => navigate(a.dataset.view)));
+$$('#nav > a').forEach((a) => a.addEventListener('click', () => navigate(a.dataset.view)));
+
+// Apartado desplegable «Informes»: expande/colapsa y permite descargar cada
+// reporte directo desde el menú, sin entrar a la página.
+const navInformes = $('#nav-informes');
+const navInformesSub = $('#nav-informes-sub');
+if (navInformes && navInformesSub) {
+  navInformes.addEventListener('click', () => {
+    const abierto = navInformesSub.hidden;
+    navInformesSub.hidden = !abierto;
+    navInformes.setAttribute('aria-expanded', String(abierto));
+  });
+  $$('[data-rep]', navInformesSub).forEach((a) => a.addEventListener('click', (e) => {
+    e.preventDefault();
+    withBusy(a, () => descargarExcel(a.dataset.rep));
+  }));
+}
+
 function navigate(view) {
-  $$('#nav a').forEach((a) => a.classList.toggle('active', a.dataset.view === view));
+  $$('#nav > a').forEach((a) => a.classList.toggle('active', a.dataset.view === view));
   $$('.view').forEach((s) => (s.hidden = s.dataset.view !== view));
   const cargar = { dashboard: loadDashboard, inventario: loadInventario, reportes: loadReportes, usuarios: loadUsuarios, configuracion: loadConfig }[view] || (() => {});
   return cargar();

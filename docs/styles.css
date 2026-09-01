@@ -196,6 +196,21 @@ label input, label select { margin-top: .35rem; }
 #nav a.active .ico { color: var(--brand); }
 #nav a.hidden { display: none; }
 
+/* apartado desplegable (Informes) */
+#nav a .chev { width: 15px; height: 15px; margin-left: auto; color: var(--text-3); transition: transform .18s ease, color .12s; }
+#nav a[aria-expanded="true"] .chev { transform: rotate(180deg); }
+#nav a[aria-expanded="true"] .chev,
+#nav a.active .chev { color: var(--brand); }
+/* selector por id: debe ganarle en especificidad a "#nav a" */
+#nav-informes-sub { display: flex; flex-direction: column; padding: 1px .6rem 6px 2.55rem; gap: 1px; }
+#nav-informes-sub a {
+  display: block; padding: .42rem .6rem; border-radius: var(--r-sm);
+  font-size: .82rem; color: var(--text-2); text-decoration: none;
+  cursor: pointer; transition: background .12s, color .12s, opacity .12s;
+}
+#nav-informes-sub a:hover { background: var(--surface-2); color: var(--text); }
+#nav-informes-sub a.busy { opacity: .55; pointer-events: none; }
+
 .sidebar-foot { padding: .9rem 1rem 1.1rem; border-top: 1px solid var(--border); }
 #user-box { display: flex; align-items: center; gap: .6rem; margin-bottom: .55rem; }
 #user-box .avatar {
@@ -453,6 +468,10 @@ button.busy:not(.primary):not([type="submit"])::after {
 /* --- tablet / móvil ancho: navegación inferior tipo app --- */
 @media (max-width: 900px) {
   #app { flex-direction: column; min-height: 100dvh; }
+
+  /* el desplegable de Informes solo aplica al menú lateral de escritorio */
+  #nav-informes-sub { display: none !important; }
+  #nav a .chev { display: none; }
 
   #topbar {
     display: flex; align-items: center; justify-content: space-between;

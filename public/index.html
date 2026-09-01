@@ -7,7 +7,7 @@
   <title>Farmacia · Gestión</title>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
-  <link rel="stylesheet" href="styles.css?v=9" />
+  <link rel="stylesheet" href="styles.css?v=10" />
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -19,6 +19,7 @@
     <symbol id="i-config" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
     <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></symbol>
   </svg>
 
   <!-- LOGIN -->
@@ -57,7 +58,17 @@
       <nav id="nav">
         <a data-view="dashboard" class="active"><svg class="ico"><use href="#i-panel"/></svg> <span>Panel</span></a>
         <a data-view="inventario"><svg class="ico"><use href="#i-inventario"/></svg> <span>Inventario</span></a>
-        <a data-view="reportes"><svg class="ico"><use href="#i-reportes"/></svg> <span>Reportes</span></a>
+        <a data-view="reportes" id="nav-informes" aria-expanded="false">
+          <svg class="ico"><use href="#i-reportes"/></svg> <span>Informes</span>
+          <svg class="ico chev"><use href="#i-chevron"/></svg>
+        </a>
+        <div id="nav-informes-sub" hidden>
+          <a href="#" data-rep="inventario">Reporte de inventario</a>
+          <a href="#" data-rep="por-vencer">Medicamentos a devolver</a>
+          <a href="#" data-rep="bajo-stock">Medicamentos bajo stock</a>
+          <a href="#" data-rep="valorizacion">Valorización de inventario</a>
+          <a href="#" data-rep="completo">Reporte completo</a>
+        </div>
         <a data-view="usuarios"><svg class="ico"><use href="#i-usuarios"/></svg> <span>Usuarios</span></a>
         <a data-view="configuracion"><svg class="ico"><use href="#i-config"/></svg> <span>Configuración</span></a>
       </nav>
@@ -95,7 +106,7 @@
 
       <section data-view="reportes" class="view" hidden>
         <div class="view-head">
-          <h2>Reportes</h2>
+          <h2>Informes</h2>
           <p class="muted">Descarga la información en formato Excel (.xlsx).</p>
         </div>
         <div id="reportes-list" class="reportes-grid"></div>
@@ -139,6 +150,6 @@
 
   <div id="toast" class="toast" hidden></div>
 
-  <script src="app.js?v=9"></script>
+  <script src="app.js?v=10"></script>
 </body>
 </html>

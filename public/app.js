@@ -114,7 +114,8 @@ async function startApp(r) {
     usuarios: !!PERMISOS.usuarios,
     configuracion: !!PERMISOS.config,
   };
-  $$('#nav a').forEach((a) => a.classList.toggle('hidden', !visible[a.dataset.view]));
+  $$('#nav > a').forEach((a) => a.classList.toggle('hidden', !visible[a.dataset.view]));
+  if (!visible.reportes && $('#nav-informes-sub')) $('#nav-informes-sub').hidden = true;
 
   await navigate('dashboard');
   $('#app').hidden = false;
@@ -122,10 +123,26 @@ async function startApp(r) {
 }
 
 // ---------- Navegación ----------
-$$('#nav a').forEach((a) => a.addEventListener('click', () => navigate(a.dataset.view)));
+$$('#nav > a').forEach((a) => a.addEventListener('click', () => navigate(a.dataset.view)));
+
+// Apartado desplegable «Informes»: expande/colapsa y descarga cada reporte
+// directo desde el menú.
+const navInformes = $('#nav-informes');
+const navInformesSub = $('#nav-informes-sub');
+if (navInformes && navInformesSub) {
+  navInformes.addEventListener('click', () => {
+    const abierto = navInformesSub.hidden;
+    navInformesSub.hidden = !abierto;
+    navInformes.setAttribute('aria-expanded', String(abierto));
+  });
+  $$('[data-rep]', navInformesSub).forEach((a) => a.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location = '/api/reportes/' + a.dataset.rep + '.xlsx';
+  }));
+}
 
 function navigate(view) {
-  $$('#nav a').forEach((a) => a.classList.toggle('active', a.dataset.view === view));
+  $$('#nav > a').forEach((a) => a.classList.toggle('active', a.dataset.view === view));
   $$('.view').forEach((s) => (s.hidden = s.dataset.view !== view));
   const cargar = { dashboard: loadDashboard, inventario: loadInventario, reportes: loadReportes, usuarios: loadUsuarios, configuracion: loadConfig }[view] || (() => {});
   return cargar();
