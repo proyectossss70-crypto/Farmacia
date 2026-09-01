@@ -7,6 +7,7 @@ const usuariosDemo = [
   { nombre: 'Jefe / Propietario', usuario: 'jefe', password: 'jefe123', rol: 'jefe' },
   { nombre: 'Administrador', usuario: 'admin', password: 'admin123', rol: 'administrador' },
   { nombre: 'Soporte', usuario: 'soporte', password: 'soporte123', rol: 'soporte' },
+  { nombre: 'Cajero', usuario: 'cajero', password: 'cajero123', rol: 'cajero' },
 ];
 
 async function main() {
@@ -54,6 +55,7 @@ async function main() {
   console.log('  Jefe:          usuario "jefe"     contraseña "jefe123"');
   console.log('  Administrador: usuario "admin"    contraseña "admin123"');
   console.log('  Soporte:       usuario "soporte"  contraseña "soporte123"');
+  console.log('  Cajero:        usuario "cajero"   contraseña "cajero123"');
   console.log('\nCambia estas contraseñas desde la sección Usuarios al iniciar sesión.');
 }
 

@@ -17,6 +17,7 @@ const USERS = [
   { email: 'jefe@farmacia.com', password: 'jefe123', nombre: 'Jefe / Propietario', rol: 'jefe' },
   { email: 'admin@farmacia.com', password: 'admin123', nombre: 'Administrador', rol: 'administrador' },
   { email: 'soporte@farmacia.com', password: 'soporte123', nombre: 'Soporte', rol: 'soporte' },
+  { email: 'cajero@farmacia.com', password: 'cajero123', nombre: 'Cajero', rol: 'cajero' },
 ];
 
 async function main() {
@@ -79,6 +80,7 @@ async function main() {
   console.log('  jefe@farmacia.com / jefe123');
   console.log('  admin@farmacia.com / admin123');
   console.log('  soporte@farmacia.com / soporte123');
+  console.log('  cajero@farmacia.com / cajero123');
 }
 
 main().then(() => process.exit(0)).catch((e) => { console.error(e); process.exit(1); });

@@ -10,7 +10,7 @@ const UNIDAD_LABEL = { unidad: 'Por unidad', blister: 'Por blister' };
 
 let ME = null;
 let PERMISOS = {};
-let ROLES = ['jefe', 'administrador', 'soporte'];
+let ROLES = ['jefe', 'administrador', 'soporte', 'cajero'];
 let MEDS = [];
 
 // ---------- API ----------
@@ -123,12 +123,12 @@ async function loadDashboard() {
   const cards = [
     { n: d.total_articulos, l: 'Artículos' },
     { n: d.unidades_totales, l: 'Unidades en stock' },
-    { n: '$' + money(d.valor_costo), l: 'Valor a costo' },
+    PERMISOS.costos && { n: '$' + money(d.valor_costo), l: 'Valor a costo' },
     { n: '$' + money(d.valor_venta), l: 'Valor a venta' },
     { n: d.por_vencer, l: `Por vencer (${d.meses_alerta} meses)`, cls: d.por_vencer ? 'warn' : '' },
     { n: d.vencidos, l: 'Vencidos', cls: d.vencidos ? 'bad' : '' },
     { n: d.bajo_stock, l: 'Bajo stock', cls: d.bajo_stock ? 'warn' : '' },
-  ];
+  ].filter(Boolean);
   $('#cards').innerHTML = cards
     .map((c) => `<div class="card ${c.cls || ''}"><div class="n">${esc(c.n)}</div><div class="l">${esc(c.l)}</div></div>`)
     .join('');
@@ -172,10 +172,12 @@ function renderInventario() {
   const q = $('#buscar').value.trim().toLowerCase();
   const fe = $('#filtro-estado').value;
   const puedeEditar = PERMISOS.inventario === 'rw';
+  const ver = !!PERMISOS.costos;
   const rows = MEDS.filter(
     (m) => (!q || m.nombre.toLowerCase().includes(q) || (m.categoria || '').toLowerCase().includes(q)) && (!fe || m.estado === fe)
   );
-  const headers = ['Medicamento', 'Categoría', 'Stock', 'Precio', 'Costo', 'Margen', 'Vence', 'Se vende', 'Estado'];
+  const headers = ['Medicamento', 'Categoría', 'Stock', 'Precio',
+    ...(ver ? ['Costo', 'Margen'] : []), 'Vence', 'Se vende', 'Estado'];
   if (puedeEditar) headers.push('');
   $('#inv-table').innerHTML = rows.length
     ? tabla(
@@ -186,8 +188,10 @@ function renderInventario() {
             esc(m.categoria || '—'),
             `${m.stock}${m.bajo_stock ? '<span class="badge low">bajo</span>' : ''}`,
             '$' + money(m.precio),
-            '$' + money(m.costo),
-            `$${money(m.margen_unitario)} <span class="muted">(${m.margen_pct}%)</span>`,
+            ...(ver ? [
+              '$' + money(m.costo),
+              `$${money(m.margen_unitario)} <span class="muted">(${m.margen_pct}%)</span>`,
+            ] : []),
             m.fecha_vencimiento || '—',
             UNIDAD_LABEL[m.unidad_venta] + (m.unidad_venta === 'blister' ? ` ×${m.unidades_por_blister}` : ''),
             badge(m),

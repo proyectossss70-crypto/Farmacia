@@ -60,6 +60,7 @@ Colecciones que crea en Firestore: `usuarios`, `medicamentos`, `configuracion`.
 | Jefe          | `jefe`    | `jefe123`    | Todo: inventario, reportes, usuarios y configuración |
 | Administrador | `admin`   | `admin123`   | Inventario (editar), reportes, configuración; ve usuarios |
 | Soporte       | `soporte` | `soporte123` | Ve inventario y reportes; gestiona usuarios |
+| Cajero        | `cajero`  | `cajero123`  | Solo consulta panel e inventario; no ve costos ni margen |
 
 > Cambia las contraseñas desde la sección **Usuarios** después de entrar.
 > Los permisos de cada rol se editan en [`permisos.js`](permisos.js).

@@ -23,11 +23,12 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 
 const ESTADO_LABEL = { ok: 'OK', por_vencer: 'Por vencer', vencido: 'Vencido', sin_fecha: 'Sin fecha' };
 const UNIDAD_LABEL = { unidad: 'Por unidad', blister: 'Por blister' };
-const ROLES = ['jefe', 'administrador', 'soporte'];
+const ROLES = ['jefe', 'administrador', 'soporte', 'cajero'];
 const PERMISOS = {
-  jefe: { inventario: 'rw', reportes: true, usuarios: 'rw', config: 'rw' },
-  administrador: { inventario: 'rw', reportes: true, usuarios: 'r', config: 'rw' },
-  soporte: { inventario: 'r', reportes: true, usuarios: 'rw', config: 'r' },
+  jefe: { inventario: 'rw', reportes: true, usuarios: 'rw', config: 'rw', costos: true },
+  administrador: { inventario: 'rw', reportes: true, usuarios: 'r', config: 'rw', costos: true },
+  soporte: { inventario: 'r', reportes: true, usuarios: 'rw', config: 'r', costos: true },
+  cajero: { inventario: 'r', reportes: false, usuarios: false, config: false, costos: false },
 };
 
 let ME = null;
@@ -182,12 +183,12 @@ async function loadDashboard() {
   const cards = [
     { n: MEDS.length, l: 'Artículos' },
     { n: +tot((m) => m.stock).toFixed(2), l: 'Unidades en stock' },
-    { n: '$' + money(tot((m) => m.valor_costo)), l: 'Valor a costo' },
+    PERM.costos && { n: '$' + money(tot((m) => m.valor_costo)), l: 'Valor a costo' },
     { n: '$' + money(tot((m) => m.valor_venta)), l: 'Valor a venta' },
     { n: MEDS.filter((m) => m.estado === 'por_vencer').length, l: `Por vencer (${MESES} meses)`, cls: 'warn' },
     { n: MEDS.filter((m) => m.estado === 'vencido').length, l: 'Vencidos', cls: 'bad' },
     { n: MEDS.filter((m) => m.bajo_stock).length, l: 'Bajo stock', cls: 'warn' },
-  ];
+  ].filter(Boolean);
   $('#cards').innerHTML = cards.map((c) =>
     `<div class="card ${c.cls && c.n ? c.cls : ''}"><div class="n">${esc(c.n)}</div><div class="l">${esc(c.l)}</div></div>`).join('');
 
@@ -216,18 +217,23 @@ function renderInv() {
   const q = $('#buscar').value.trim().toLowerCase();
   const fe = $('#filtro-estado').value;
   const rw = PERM.inventario === 'rw';
+  const ver = !!PERM.costos;
   const rows = MEDS.filter((m) =>
     (!q || m.nombre.toLowerCase().includes(q) || (m.categoria || '').toLowerCase().includes(q)) &&
     (!fe || m.estado === fe));
-  const headers = ['Medicamento', 'Categoría', 'Stock', 'Precio', 'Costo', 'Margen', 'Vence', 'Se vende', 'Estado'];
+  const headers = ['Medicamento', 'Categoría', 'Stock', 'Precio',
+    ...(ver ? ['Costo', 'Margen'] : []), 'Vence', 'Se vende', 'Estado'];
   if (rw) headers.push('');
   $('#inv-table').innerHTML = rows.length ? tabla(headers, rows.map((m) => {
     const c = [
       esc(m.nombre) + (m.lote ? ` <span class="muted">(${esc(m.lote)})</span>` : ''),
       esc(m.categoria || '—'),
       `${m.stock}${m.bajo_stock ? '<span class="badge low">bajo</span>' : ''}`,
-      '$' + money(m.precio), '$' + money(m.costo),
-      `$${money(m.margen_unitario)} <span class="muted">(${m.margen_pct}%)</span>`,
+      '$' + money(m.precio),
+      ...(ver ? [
+        '$' + money(m.costo),
+        `$${money(m.margen_unitario)} <span class="muted">(${m.margen_pct}%)</span>`,
+      ] : []),
       m.fecha_vencimiento || '—',
       UNIDAD_LABEL[m.unidad_venta] + (m.unidad_venta === 'blister' ? ` ×${m.unidades_por_blister}` : ''),
       badge(m),

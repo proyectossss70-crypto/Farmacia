@@ -29,6 +29,7 @@ Crea estas cuentas (cámbialas de contraseña después, o créalas tú desde la 
 | `jefe@farmacia.com` | `jefe123` | jefe |
 | `admin@farmacia.com` | `admin123` | administrador |
 | `soporte@farmacia.com` | `soporte123` | soporte |
+| `cajero@farmacia.com` | `cajero123` | cajero |
 
 ## 3. Publicar las reglas de seguridad de Firestore
 
@@ -55,10 +56,15 @@ Crea estas cuentas (cámbialas de contraseña después, o créalas tú desde la 
 
 ## Roles
 
-| | Inventario | Reportes | Usuarios | Configuración |
-|---|---|---|---|---|
-| **jefe** | editar | sí | editar | editar |
-| **administrador** | editar | sí | ver | editar |
-| **soporte** | ver | sí | editar | ver |
+| | Inventario | Reportes | Usuarios | Configuración | Ve costos/margen |
+|---|---|---|---|---|---|
+| **jefe** | editar | sí | editar | editar | sí |
+| **administrador** | editar | sí | ver | editar | sí |
+| **soporte** | ver | sí | editar | ver | sí |
+| **cajero** | ver | no | — | — | **no** |
 
-Se ajustan en `firestore.rules` (seguridad real) y en `docs/app.js` (lo que se ve).
+El **cajero** solo consulta el panel y el inventario (nombre, stock, precio de venta,
+vencimiento). No ve precio de costo ni margen, ni reportes, usuarios o configuración.
+
+Se ajustan en `firestore.rules` (seguridad real de escritura) y en `docs/app.js` → `PERMISOS`
+(lo que se muestra, incluido ocultar costos con `costos: false`).
