@@ -36,17 +36,35 @@ function toast(msg, isErr = false) {
 }
 
 // ---------- Auth ----------
+function skeletonCards(n = 4) {
+  return Array.from({ length: n }).map(() =>
+    `<div class="card"><div class="skeleton" style="height:10px;width:55%"></div>` +
+    `<div class="skeleton" style="height:26px;width:42%;margin-top:14px"></div></div>`).join('');
+}
+function skeletonTable(rows = 5, cols = 5) {
+  return `<div class="skeleton-table">${Array.from({ length: rows }).map(() =>
+    `<div class="skeleton-row">${Array.from({ length: cols }).map((_, i) =>
+      `<div class="skeleton" style="flex:${i === 0 ? 2.4 : 1}"></div>`).join('')}</div>`).join('')}</div>`;
+}
+async function withBusy(btn, fn) {
+  if (btn) btn.classList.add('busy');
+  try { return await fn(); }
+  finally { if (btn) btn.classList.remove('busy'); }
+}
+
 $('#login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const f = e.target;
   $('#login-error').hidden = true;
-  try {
-    const r = await api('/login', { method: 'POST', body: { usuario: f.usuario.value, password: f.password.value } });
-    startApp(r);
-  } catch (err) {
-    $('#login-error').textContent = err.message;
-    $('#login-error').hidden = false;
-  }
+  await withBusy(f.querySelector('button[type=submit]'), async () => {
+    try {
+      const r = await api('/login', { method: 'POST', body: { usuario: f.usuario.value, password: f.password.value } });
+      startApp(r);
+    } catch (err) {
+      $('#login-error').textContent = err.message;
+      $('#login-error').hidden = false;
+    }
+  });
 });
 
 $('#logout').addEventListener('click', async () => {
@@ -99,6 +117,8 @@ function navigate(view) {
 
 // ---------- Dashboard ----------
 async function loadDashboard() {
+  $('#cards').innerHTML = skeletonCards(4);
+  $('#alertas').innerHTML = skeletonTable(4, 5);
   const d = await api('/dashboard');
   const cards = [
     { n: d.total_articulos, l: 'Artículos' },
@@ -143,6 +163,7 @@ $('#nuevo-med').addEventListener('click', () => formMedicamento());
 async function loadInventario() {
   const puedeEditar = PERMISOS.inventario === 'rw';
   $('#nuevo-med').hidden = !puedeEditar;
+  $('#inv-table').innerHTML = skeletonTable(6, 6);
   MEDS = await api('/medicamentos');
   renderInventario();
 }
@@ -251,6 +272,7 @@ $('#nuevo-user').addEventListener('click', () => formUsuario());
 async function loadUsuarios() {
   const puedeEditar = PERMISOS.usuarios === 'rw';
   $('#nuevo-user').hidden = !puedeEditar;
+  $('#users-table').innerHTML = skeletonTable(4, 4);
   const users = await api('/usuarios');
   const headers = ['Nombre', 'Usuario', 'Rol', 'Estado'];
   if (puedeEditar) headers.push('');
@@ -320,13 +342,15 @@ async function loadConfig() {
 
 $('#config-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  try {
-    await api('/configuracion', { method: 'PUT', body: { meses_alerta_vencimiento: $('#meses-alerta').value } });
-    $('#config-ok').hidden = false;
-    setTimeout(() => ($('#config-ok').hidden = true), 2000);
-  } catch (err) {
-    toast(err.message, true);
-  }
+  await withBusy(e.target.querySelector('button[type=submit]'), async () => {
+    try {
+      await api('/configuracion', { method: 'PUT', body: { meses_alerta_vencimiento: $('#meses-alerta').value } });
+      $('#config-ok').hidden = false;
+      setTimeout(() => ($('#config-ok').hidden = true), 2000);
+    } catch (err) {
+      toast(err.message, true);
+    }
+  });
 });
 
 // ---------- Helpers UI ----------
@@ -351,11 +375,15 @@ function openModal(title, html, onSubmit) {
   $('#modal-form').onsubmit = async (e) => {
     e.preventDefault();
     $('#modal-error').hidden = true;
+    const btn = e.target.querySelector('button[type=submit]');
+    if (btn) btn.classList.add('busy');
     try {
       await onSubmit(e.target);
     } catch (err) {
       $('#modal-error').textContent = err.message;
       $('#modal-error').hidden = false;
+    } finally {
+      if (btn) btn.classList.remove('busy');
     }
   };
 }

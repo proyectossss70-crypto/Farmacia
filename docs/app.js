@@ -117,6 +117,8 @@ $('#login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   $('#login-error').hidden = true;
   const f = e.target;
+  const btn = f.querySelector('button[type=submit]');
+  btn.classList.add('busy');
   try {
     await signInWithEmailAndPassword(auth, f.email.value.trim(), f.password.value);
   } catch (err) {
@@ -124,6 +126,8 @@ $('#login-form').addEventListener('submit', async (e) => {
       ? 'Correo o contraseña incorrectos.'
       : 'No se pudo iniciar sesión: ' + (err.code || err.message);
     $('#login-error').hidden = false;
+  } finally {
+    btn.classList.remove('busy');
   }
 });
 
@@ -151,8 +155,27 @@ async function fetchMeds() {
   MEDS = qs.docs.map((d) => enriquecer({ id: d.id, ...d.data() }));
 }
 
+// ---------- estados de carga ----------
+function skeletonCards(n = 4) {
+  return Array.from({ length: n }).map(() =>
+    `<div class="card"><div class="skeleton" style="height:10px;width:55%"></div>` +
+    `<div class="skeleton" style="height:26px;width:42%;margin-top:14px"></div></div>`).join('');
+}
+function skeletonTable(rows = 5, cols = 5) {
+  return `<div class="skeleton-table">${Array.from({ length: rows }).map(() =>
+    `<div class="skeleton-row">${Array.from({ length: cols }).map((_, i) =>
+      `<div class="skeleton" style="flex:${i === 0 ? 2.4 : 1}"></div>`).join('')}</div>`).join('')}</div>`;
+}
+async function withBusy(btn, fn) {
+  if (btn) btn.classList.add('busy');
+  try { return await fn(); }
+  finally { if (btn) btn.classList.remove('busy'); }
+}
+
 // ---------- dashboard ----------
 async function loadDashboard() {
+  $('#cards').innerHTML = skeletonCards(4);
+  $('#alertas').innerHTML = skeletonTable(4, 5);
   MESES = await getMeses();
   if (PERM.inventario) await fetchMeds();
   const tot = (f) => MEDS.reduce((s, m) => s + f(m), 0);
@@ -183,6 +206,7 @@ $('#nuevo-med').addEventListener('click', () => formMed());
 
 async function loadInventario() {
   $('#nuevo-med').hidden = PERM.inventario !== 'rw';
+  $('#inv-table').innerHTML = skeletonTable(6, 6);
   MESES = await getMeses();
   await fetchMeds();
   renderInv();
@@ -288,7 +312,7 @@ async function loadReportes() {
   ];
   $('#reportes-list').innerHTML = defs.map(([id, n]) =>
     `<div class="reporte-card"><h4>${esc(n)}</h4><button class="primary" data-rep="${id}"><svg class="ico"><use href="#i-download"/></svg> Descargar Excel</button></div>`).join('');
-  $$('#reportes-list [data-rep]').forEach((b) => b.addEventListener('click', () => descargarExcel(b.dataset.rep)));
+  $$('#reportes-list [data-rep]').forEach((b) => b.addEventListener('click', () => withBusy(b, () => descargarExcel(b.dataset.rep))));
 }
 
 function hojaInventario(meds) {
@@ -376,6 +400,7 @@ $('#nuevo-user').addEventListener('click', () => formUser());
 async function loadUsuarios() {
   const rw = PERM.usuarios === 'rw';
   $('#nuevo-user').hidden = !rw;
+  $('#users-table').innerHTML = skeletonTable(4, 4);
   const qs = await getDocs(collection(dbf, 'usuarios'));
   const users = qs.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
   const headers = ['Nombre', 'Correo', 'Rol', 'Estado'];
@@ -456,12 +481,15 @@ $('#config-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const n = parseInt($('#meses-alerta').value, 10);
   if (!Number.isFinite(n) || n < 0 || n > 60) return toast('Los meses deben estar entre 0 y 60', true);
-  try {
-    await setDoc(doc(dbf, 'configuracion', 'app'), { meses_alerta_vencimiento: n }, { merge: true });
-    MESES = n;
-    $('#config-ok').hidden = false;
-    setTimeout(() => ($('#config-ok').hidden = true), 2000);
-  } catch (err) { toast(err.message, true); }
+  const btn = e.target.querySelector('button[type=submit]');
+  await withBusy(btn, async () => {
+    try {
+      await setDoc(doc(dbf, 'configuracion', 'app'), { meses_alerta_vencimiento: n }, { merge: true });
+      MESES = n;
+      $('#config-ok').hidden = false;
+      setTimeout(() => ($('#config-ok').hidden = true), 2000);
+    } catch (err) { toast(err.message, true); }
+  });
 });
 
 // ---------- helpers UI ----------
@@ -481,8 +509,11 @@ function openModal(title, html, onSubmit) {
   $('#modal-form').onsubmit = async (e) => {
     e.preventDefault();
     $('#modal-error').hidden = true;
+    const btn = e.target.querySelector('button[type=submit]');
+    if (btn) btn.classList.add('busy');
     try { await onSubmit(e.target); }
     catch (err) { $('#modal-error').textContent = err.message; $('#modal-error').hidden = false; }
+    finally { if (btn) btn.classList.remove('busy'); }
   };
 }
 function closeModal() { $('#modal').hidden = true; }
