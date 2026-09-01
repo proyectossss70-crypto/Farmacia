@@ -2,6 +2,20 @@
 
 App web para gestión de una farmacia: **inventario de medicamentos**, **alertas de vencimiento configurables**, **usuarios con roles** y **reportes descargables en Excel**.
 
+## Dos versiones en este repo
+
+| Versión | Carpeta | Hosting | Base de datos |
+|---|---|---|---|
+| **Web / GitHub Pages** (recomendada) | [`docs/`](docs/) | GitHub Pages (estático, gratis) | Firestore + Firebase Auth, directo desde el navegador |
+| Servidor Node | raíz (`server.js`, …) | Render / local | Firestore (Admin SDK) o SQLite local |
+
+**Para publicarla como sitio web: sigue [`docs/SETUP.md`](docs/SETUP.md)** (3 pasos, una sola vez).
+Luego cada cambio se publica con solo `git push`.
+
+---
+
+## Versión servidor Node
+
 ## Requisitos
 
 - Node.js 22 o superior.

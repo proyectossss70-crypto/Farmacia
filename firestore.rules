@@ -1,9 +1,41 @@
 rules_version = '2';
 
-// Toda la lectura/escritura pasa por el servidor (Firebase Admin SDK),
-// que ignora estas reglas. Bloqueamos el acceso directo desde clientes.
+// App cliente (GitHub Pages) — la seguridad vive AQUÍ.
+// Cada usuario autenticado tiene un doc  usuarios/{uid}  con { rol, activo }.
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function udoc() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+    }
+    function activo() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/usuarios/$(request.auth.uid))
+        && udoc().activo == true;
+    }
+    function rol() { return udoc().rol; }
+
+    function puedeInventario() { return activo() && rol() in ['jefe', 'administrador']; }
+    function puedeUsuarios()   { return activo() && rol() in ['jefe', 'soporte']; }
+    function puedeConfig()     { return activo() && rol() in ['jefe', 'administrador']; }
+
+    match /usuarios/{uid} {
+      // cada quien puede leer su propio doc (para conocer su rol al iniciar sesión)
+      allow get: if request.auth != null && (request.auth.uid == uid || activo());
+      allow list: if activo();
+      allow create, update, delete: if puedeUsuarios();
+    }
+
+    match /medicamentos/{id} {
+      allow read: if activo();
+      allow create, update, delete: if puedeInventario();
+    }
+
+    match /configuracion/{clave} {
+      allow read: if activo();
+      allow write: if puedeConfig();
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

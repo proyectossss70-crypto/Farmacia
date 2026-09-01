@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Farmacia · Gestión</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <!-- LOGIN -->
+  <div id="login" class="login-wrap" hidden>
+    <form id="login-form" class="login-card">
+      <div class="login-logo">💊</div>
+      <h1>Farmacia</h1>
+      <p class="muted">Inicia sesión para continuar</p>
+      <label>Correo<input name="email" type="email" autocomplete="username" required /></label>
+      <label>Contraseña<input name="password" type="password" autocomplete="current-password" required /></label>
+      <button type="submit">Entrar</button>
+      <p id="login-error" class="error" hidden></p>
+    </form>
+  </div>
+
+  <div id="cargando" class="login-wrap"><div class="login-card"><div class="login-logo">💊</div><p class="muted">Cargando…</p></div></div>
+
+  <!-- APP -->
+  <div id="app" hidden>
+    <aside class="sidebar">
+      <div class="brand">💊 <span>Farmacia</span></div>
+      <nav id="nav">
+        <a data-view="dashboard" class="active">📊 <span>Panel</span></a>
+        <a data-view="inventario">🧺 <span>Inventario</span></a>
+        <a data-view="reportes">⬇️ <span>Reportes</span></a>
+        <a data-view="usuarios">🪪 <span>Usuarios</span></a>
+        <a data-view="configuracion">⚙️ <span>Configuración</span></a>
+      </nav>
+      <div class="sidebar-foot">
+        <div id="user-box"></div>
+        <button id="logout" class="link">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <main id="main">
+      <section data-view="dashboard" class="view">
+        <h2>Panel</h2>
+        <div id="cards" class="cards"></div>
+        <h3>Requiere atención</h3>
+        <div id="alertas" class="table-wrap"></div>
+      </section>
+
+      <section data-view="inventario" class="view" hidden>
+        <div class="view-head">
+          <h2>Inventario</h2>
+          <div class="view-actions">
+            <input id="buscar" placeholder="Buscar medicamento…" />
+            <select id="filtro-estado">
+              <option value="">Todos los estados</option>
+              <option value="vencido">Vencidos</option>
+              <option value="por_vencer">Por vencer (devolver)</option>
+              <option value="ok">OK</option>
+              <option value="sin_fecha">Sin fecha</option>
+            </select>
+            <button id="nuevo-med" class="primary">+ Nuevo medicamento</button>
+          </div>
+        </div>
+        <div id="inv-table" class="table-wrap"></div>
+      </section>
+
+      <section data-view="reportes" class="view" hidden>
+        <h2>Reportes</h2>
+        <p class="muted">Descarga la información en formato Excel (.xlsx).</p>
+        <div id="reportes-list" class="reportes-grid"></div>
+      </section>
+
+      <section data-view="usuarios" class="view" hidden>
+        <div class="view-head">
+          <h2>Usuarios</h2>
+          <div class="view-actions">
+            <button id="nuevo-user" class="primary">+ Nuevo usuario</button>
+          </div>
+        </div>
+        <div id="users-table" class="table-wrap"></div>
+      </section>
+
+      <section data-view="configuracion" class="view" hidden>
+        <h2>Configuración</h2>
+        <form id="config-form" class="config-card">
+          <label>
+            Alertar sobre vencimiento con anticipación (meses)
+            <input id="meses-alerta" type="number" min="0" max="60" step="1" />
+          </label>
+          <p class="muted">
+            Los medicamentos que venzan dentro de este plazo se marcan como
+            <strong>«Por vencer (devolver)»</strong>.
+          </p>
+          <button type="submit" class="primary">Guardar</button>
+          <span id="config-ok" class="ok" hidden>Guardado ✓</span>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <div id="modal" class="modal" hidden>
+    <div class="modal-card">
+      <div class="modal-head"><h3 id="modal-title"></h3><button id="modal-close" class="link">✕</button></div>
+      <form id="modal-form"></form>
+      <p id="modal-error" class="error" hidden></p>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
