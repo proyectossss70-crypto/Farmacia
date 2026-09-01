@@ -29,6 +29,7 @@ function cargarCredencial() {
   const rutas = [
     process.env.GOOGLE_APPLICATION_CREDENTIALS,
     path.join(__dirname, 'serviceAccountKey.json'),
+    '/etc/secrets/serviceAccountKey.json', // Secret File en Render
   ].filter(Boolean);
   for (const ruta of rutas) {
     if (fs.existsSync(ruta)) {
