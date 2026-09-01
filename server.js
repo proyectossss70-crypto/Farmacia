@@ -58,6 +58,13 @@ function canReportes(req, res, next) {
 const publicUser = (u) => ({ id: String(u.id), nombre: u.nombre, usuario: u.usuario, rol: u.rol });
 const sameId = (a, b) => String(a) === String(b);
 
+// ---------- Diagnóstico (sin datos sensibles) ----------
+app.get('/api/status', wrap(async (req, res) => {
+  let usuarios = null;
+  try { usuarios = await store.usuarios.count(); } catch (e) { usuarios = 'error: ' + e.message; }
+  res.json({ ok: true, almacenamiento: store.driver, usuarios, node_env: process.env.NODE_ENV || null });
+}));
+
 // ---------- Autenticación ----------
 app.post('/api/login', wrap(async (req, res) => {
   const { usuario, password } = req.body || {};
