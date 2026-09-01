@@ -1,0 +1,24 @@
+# Despliegue en Render (https://render.com) — plan gratuito.
+# Al conectar el repo, Render lee este archivo automáticamente (Blueprint).
+#
+# CREDENCIAL DE FIREBASE: en el panel de Render, sección "Secret Files",
+# crea un archivo llamado  serviceAccountKey.json  y pega dentro el JSON
+# de la cuenta de servicio. Render lo monta en /etc/secrets/serviceAccountKey.json
+# y la variable GOOGLE_APPLICATION_CREDENTIALS de abajo lo apunta.
+services:
+  - type: web
+    name: farmacia
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_DRIVER
+        value: firestore
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/secrets/serviceAccountKey.json

@@ -77,6 +77,24 @@ En la sección **Reportes** (botón *Descargar Excel*, archivos `.xlsx`):
 - **Valorización de inventario** — totales por categoría (costo, venta, margen).
 - **Reporte completo** — las 4 hojas anteriores en un solo archivo.
 
+## Publicar online (URL pública) con Render
+
+El repo incluye [`render.yaml`](render.yaml) para desplegar gratis en [Render](https://render.com).
+
+1. Sube este proyecto a un repositorio de GitHub (tuyo o con permiso de escritura).
+2. En Render: **New → Blueprint** → conecta ese repositorio. Render detecta `render.yaml`.
+3. Antes de crear el servicio, en **Secret Files** añade un archivo:
+   - Nombre: `serviceAccountKey.json`
+   - Contenido: el JSON de la cuenta de servicio de Firebase.
+4. **Apply / Create**. Al terminar, Render da una URL tipo `https://farmacia-xxxx.onrender.com`.
+5. Entra con `jefe` / `jefe123` y **cambia todas las contraseñas de inmediato** (sección Usuarios).
+
+Variables que configura `render.yaml`: `NODE_ENV=production`, `DB_DRIVER=firestore`,
+`SESSION_SECRET` (autogenerada), `GOOGLE_APPLICATION_CREDENTIALS=/etc/secrets/serviceAccountKey.json`.
+
+> Plan gratuito: el servicio se "duerme" tras ~15 min sin uso; la primera visita después
+> tarda ~50 s en responder y se cierran las sesiones abiertas (hay que volver a iniciar sesión).
+
 ## Estructura
 
 ```

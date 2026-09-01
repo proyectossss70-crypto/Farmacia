@@ -4,6 +4,9 @@
   "private": true,
   "type": "commonjs",
   "description": "Gestión de farmacia: inventario, alertas de vencimiento y reportes en Excel",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node server.js",
     "seed": "node seed.js",

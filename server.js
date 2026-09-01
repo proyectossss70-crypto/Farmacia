@@ -12,7 +12,11 @@ const { enriquecer } = require('./lib');
 const { generarExcel, TIPOS } = require('./reportes');
 
 const PORT = process.env.PORT || 3000;
+const isProd = process.env.NODE_ENV === 'production';
 const app = express();
+
+// Detrás del proxy HTTPS de un hosting (Render, etc.) para que la cookie segura funcione.
+if (isProd) app.set('trust proxy', 1);
 
 app.use(express.json());
 app.use(
@@ -20,7 +24,7 @@ app.use(
     secret: process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
     resave: false,
     saveUninitialized: false,
-    cookie: { httpOnly: true, sameSite: 'lax', maxAge: 8 * 60 * 60 * 1000 },
+    cookie: { httpOnly: true, sameSite: 'lax', secure: isProd, maxAge: 8 * 60 * 60 * 1000 },
   })
 );
 
@@ -225,7 +229,13 @@ app.get('/api/reportes/:tipo.xlsx', requireAuth, canReportes, wrap(async (req, r
 }));
 
 // ---------- Estáticos + manejo de errores ----------
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(
+  express.static(path.join(__dirname, 'public'), {
+    etag: true,
+    maxAge: 0,
+    setHeaders: (res) => res.setHeader('Cache-Control', 'no-cache'),
+  })
+);
 
 app.use((err, req, res, next) => {
   console.error(err);
