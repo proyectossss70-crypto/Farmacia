@@ -6,6 +6,25 @@
   <title>Farmacia · Gestión</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script>
+    // Muestra cualquier error en pantalla (para diagnóstico).
+    (function () {
+      function show(msg) {
+        var d = document.getElementById('errbar') || document.createElement('div');
+        d.id = 'errbar';
+        d.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#c62828;color:#fff;padding:10px 14px;z-index:99999;font:12px/1.4 monospace;white-space:pre-wrap;max-height:50vh;overflow:auto';
+        d.textContent = 'ERROR: ' + msg;
+        if (document.body) document.body.appendChild(d);
+      }
+      window.addEventListener('error', function (e) {
+        show((e.message || e.error || 'script') + (e.filename ? '\n' + e.filename + ':' + e.lineno : ''));
+      });
+      window.addEventListener('unhandledrejection', function (e) {
+        var r = e.reason || {};
+        show('promesa: ' + (r.code ? r.code + ' — ' : '') + (r.message || r));
+      });
+    })();
+  </script>
 </head>
 <body>
   <!-- LOGIN -->
