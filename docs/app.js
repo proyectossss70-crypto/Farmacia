@@ -74,19 +74,34 @@ function toast(msg, err = false) {
   toast._t = setTimeout(() => (t.hidden = true), 3000);
 }
 
+// ---------- pantalla de carga a pantalla completa ----------
+function showCargando(texto) {
+  $('#cargando-txt').textContent = texto;
+  $('#cargando').hidden = false;
+}
+function hideCargando() {
+  $('#cargando').hidden = true;
+}
+
 // ---------- autenticación ----------
 onAuthStateChanged(auth, async (user) => {
-  $('#cargando').hidden = true;
   if (!user) {
+    hideCargando();
     ME = null;
     $('#app').hidden = true;
     $('#login').hidden = false;
     return;
   }
+  // Hay sesión: mantenemos la pantalla de carga hasta tener todo listo,
+  // así no se ve la app a medio cargar.
+  $('#login').hidden = true;
+  $('#app').hidden = true;
+  showCargando('Verificando tu cuenta');
   try {
     const snap = await getDoc(doc(dbf, 'usuarios', user.uid));
     if (!snap.exists() || snap.data().activo !== true) {
       await signOut(auth);
+      hideCargando();
       $('#login').hidden = false;
       $('#login-error').textContent = 'Tu cuenta no tiene acceso o está desactivada.';
       $('#login-error').hidden = false;
@@ -95,8 +110,6 @@ onAuthStateChanged(auth, async (user) => {
     const d = snap.data();
     ME = { uid: user.uid, email: user.email, nombre: d.nombre || user.email, rol: d.rol };
     PERM = PERMISOS[d.rol] || {};
-    $('#login').hidden = true;
-    $('#app').hidden = false;
     const inic = (ME.nombre || ME.email || '?').trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
     $('#user-box').innerHTML =
       `<span class="avatar">${esc(inic)}</span>` +
@@ -106,10 +119,15 @@ onAuthStateChanged(auth, async (user) => {
       usuarios: !!PERM.usuarios, configuracion: !!PERM.config,
     };
     $$('#nav a').forEach((a) => a.classList.toggle('hidden', !vis[a.dataset.view]));
+    showCargando('Cargando tu información');
     MESES = await getMeses();
-    navigate('dashboard');
+    await navigate('dashboard');
+    $('#app').hidden = false;
+    hideCargando();
   } catch (e) {
     console.error(e);
+    hideCargando();
+    $('#login').hidden = false;
     toast('Error al cargar tu perfil: ' + e.message, true);
   }
 });
@@ -139,7 +157,8 @@ $$('#nav a').forEach((a) => a.addEventListener('click', () => navigate(a.dataset
 function navigate(view) {
   $$('#nav a').forEach((a) => a.classList.toggle('active', a.dataset.view === view));
   $$('.view').forEach((s) => (s.hidden = s.dataset.view !== view));
-  ({ dashboard: loadDashboard, inventario: loadInventario, reportes: loadReportes, usuarios: loadUsuarios, configuracion: loadConfig }[view] || (() => {}))();
+  const cargar = { dashboard: loadDashboard, inventario: loadInventario, reportes: loadReportes, usuarios: loadUsuarios, configuracion: loadConfig }[view] || (() => {});
+  return cargar();
 }
 
 // ---------- datos ----------

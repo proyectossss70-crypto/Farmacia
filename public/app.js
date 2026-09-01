@@ -52,6 +52,15 @@ async function withBusy(btn, fn) {
   finally { if (btn) btn.classList.remove('busy'); }
 }
 
+// ---------- pantalla de carga a pantalla completa ----------
+function showCargando(texto) {
+  $('#cargando-txt').textContent = texto;
+  $('#cargando').hidden = false;
+}
+function hideCargando() {
+  $('#cargando').hidden = true;
+}
+
 $('#login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const f = e.target;
@@ -59,7 +68,7 @@ $('#login-form').addEventListener('submit', async (e) => {
   await withBusy(f.querySelector('button[type=submit]'), async () => {
     try {
       const r = await api('/login', { method: 'POST', body: { usuario: f.usuario.value, password: f.password.value } });
-      startApp(r);
+      await startApp(r);
     } catch (err) {
       $('#login-error').textContent = err.message;
       $('#login-error').hidden = false;
@@ -74,20 +83,23 @@ async function cerrarSesion() {
 ['#logout', '#logout-m'].forEach((s) => $(s) && $(s).addEventListener('click', cerrarSesion));
 
 async function boot() {
+  showCargando('Verificando tu sesión');
   try {
     const r = await api('/me');
-    startApp(r);
+    await startApp(r);
   } catch {
+    hideCargando();
     $('#login').hidden = false;
   }
 }
 
-function startApp(r) {
+async function startApp(r) {
   ME = r.user;
   PERMISOS = r.permisos || {};
   if (r.roles) ROLES = r.roles;
   $('#login').hidden = true;
-  $('#app').hidden = false;
+  $('#app').hidden = true;
+  showCargando('Cargando tu información');
 
   const inic = (ME.nombre || ME.usuario || '?').trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
   $('#user-box').innerHTML =
@@ -104,7 +116,9 @@ function startApp(r) {
   };
   $$('#nav a').forEach((a) => a.classList.toggle('hidden', !visible[a.dataset.view]));
 
-  navigate('dashboard');
+  await navigate('dashboard');
+  $('#app').hidden = false;
+  hideCargando();
 }
 
 // ---------- Navegación ----------
@@ -113,7 +127,8 @@ $$('#nav a').forEach((a) => a.addEventListener('click', () => navigate(a.dataset
 function navigate(view) {
   $$('#nav a').forEach((a) => a.classList.toggle('active', a.dataset.view === view));
   $$('.view').forEach((s) => (s.hidden = s.dataset.view !== view));
-  ({ dashboard: loadDashboard, inventario: loadInventario, reportes: loadReportes, usuarios: loadUsuarios, configuracion: loadConfig }[view] || (() => {}))();
+  const cargar = { dashboard: loadDashboard, inventario: loadInventario, reportes: loadReportes, usuarios: loadUsuarios, configuracion: loadConfig }[view] || (() => {});
+  return cargar();
 }
 
 // ---------- Dashboard ----------

@@ -7,7 +7,7 @@
   <title>Farmacia · Gestión</title>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
-  <link rel="stylesheet" href="styles.css?v=7" />
+  <link rel="stylesheet" href="styles.css?v=8" />
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -22,7 +22,7 @@
   </svg>
 
   <!-- LOGIN -->
-  <div id="login" class="login-wrap">
+  <div id="login" class="login-wrap" hidden>
     <form id="login-form" class="login-card">
       <div class="login-logo"><svg class="ico"><use href="#i-logo"/></svg></div>
       <h1>Farmacia</h1>
@@ -32,6 +32,18 @@
       <button type="submit">Entrar</button>
       <p id="login-error" class="error" hidden></p>
     </form>
+  </div>
+
+  <div id="cargando" class="login-wrap">
+    <div class="login-card">
+      <div class="loading-box">
+        <div class="loading-mark">
+          <span class="ring"></span><span class="ring ring2"></span>
+          <span class="core"><svg class="ico"><use href="#i-logo"/></svg></span>
+        </div>
+        <p class="loading-text"><span id="cargando-txt">Cargando</span><span class="loading-dots"><span></span><span></span><span></span></span></p>
+      </div>
+    </div>
   </div>
 
   <!-- APP -->
@@ -127,6 +139,6 @@
 
   <div id="toast" class="toast" hidden></div>
 
-  <script src="app.js?v=7"></script>
+  <script src="app.js?v=8"></script>
 </body>
 </html>
