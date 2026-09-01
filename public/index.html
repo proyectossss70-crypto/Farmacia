@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Farmacia · Gestión</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=3" />
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -19,7 +19,7 @@
   <!-- LOGIN -->
   <div id="login" class="login-wrap">
     <form id="login-form" class="login-card">
-      <div class="login-logo"><svg class="ico" width="44" height="44"><use href="#i-logo"/></svg></div>
+      <div class="login-logo"><svg class="ico" width="44" height="44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-logo"/></svg></div>
       <h1>Farmacia</h1>
       <p class="muted">Inicia sesión para continuar</p>
       <label>Usuario<input name="usuario" autocomplete="username" required /></label>
@@ -32,13 +32,13 @@
   <!-- APP -->
   <div id="app" hidden>
     <aside class="sidebar">
-      <div class="brand"><svg class="ico" width="22" height="22"><use href="#i-logo"/></svg> <span>Farmacia</span></div>
+      <div class="brand"><svg class="ico" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-logo"/></svg> <span>Farmacia</span></div>
       <nav id="nav">
-        <a data-view="dashboard" class="active"><svg class="ico" width="20" height="20"><use href="#i-panel"/></svg> <span>Panel</span></a>
-        <a data-view="inventario"><svg class="ico" width="20" height="20"><use href="#i-inventario"/></svg> <span>Inventario</span></a>
-        <a data-view="reportes"><svg class="ico" width="20" height="20"><use href="#i-reportes"/></svg> <span>Reportes</span></a>
-        <a data-view="usuarios"><svg class="ico" width="20" height="20"><use href="#i-usuarios"/></svg> <span>Usuarios</span></a>
-        <a data-view="configuracion"><svg class="ico" width="20" height="20"><use href="#i-config"/></svg> <span>Configuración</span></a>
+        <a data-view="dashboard" class="active"><svg class="ico" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-panel"/></svg> <span>Panel</span></a>
+        <a data-view="inventario"><svg class="ico" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-inventario"/></svg> <span>Inventario</span></a>
+        <a data-view="reportes"><svg class="ico" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-reportes"/></svg> <span>Reportes</span></a>
+        <a data-view="usuarios"><svg class="ico" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-usuarios"/></svg> <span>Usuarios</span></a>
+        <a data-view="configuracion"><svg class="ico" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-config"/></svg> <span>Configuración</span></a>
       </nav>
       <div class="sidebar-foot">
         <div id="user-box"></div>
@@ -122,6 +122,6 @@
 
   <div id="toast" class="toast" hidden></div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
