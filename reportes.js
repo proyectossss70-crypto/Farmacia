@@ -1,8 +1,8 @@
 'use strict';
 
 const ExcelJS = require('exceljs');
-const db = require('./db');
-const { getMesesAlerta, enriquecer } = require('./lib');
+const store = require('./store');
+const { enriquecer } = require('./lib');
 
 const UNIDAD_LABEL = { unidad: 'Por unidad', blister: 'Por blister' };
 const ESTADO_LABEL = {
@@ -12,9 +12,9 @@ const ESTADO_LABEL = {
   sin_fecha: 'Sin fecha',
 };
 
-function cargarMedicamentos() {
-  const meses = getMesesAlerta();
-  const rows = db.prepare('SELECT * FROM medicamentos ORDER BY nombre').all();
+async function cargarMedicamentos() {
+  const meses = await store.config.mesesAlerta();
+  const rows = await store.medicamentos.list();
   return rows.map((r) => enriquecer(r, meses));
 }
 
@@ -162,7 +162,7 @@ const TIPOS = {
 async function generarExcel(tipo) {
   const def = TIPOS[tipo];
   if (!def) throw new Error('Tipo de reporte desconocido: ' + tipo);
-  const meds = cargarMedicamentos();
+  const meds = await cargarMedicamentos();
   const wb = new ExcelJS.Workbook();
   wb.creator = 'Farmacia';
   wb.created = new Date();

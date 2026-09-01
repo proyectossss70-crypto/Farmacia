@@ -4,7 +4,7 @@ App web para gestión de una farmacia: **inventario de medicamentos**, **alertas
 
 ## Requisitos
 
-- Node.js 22 o superior (usa el módulo SQLite nativo `node:sqlite`, sin bases de datos externas).
+- Node.js 22 o superior.
 
 ## Instalación y arranque
 
@@ -15,6 +15,29 @@ npm start         # http://localhost:3000
 ```
 
 Para desarrollo con recarga automática: `npm run dev`.
+
+## Almacenamiento de datos
+
+La app funciona con dos backends de datos y elige automáticamente:
+
+| Situación | Backend usado |
+|-----------|---------------|
+| Sin credenciales de Firebase | **SQLite local** (`data/farmacia.db`) |
+| Con credenciales de Firebase | **Cloud Firestore** |
+
+Se puede forzar con la variable de entorno `DB_DRIVER=sqlite` o `DB_DRIVER=firestore`.
+Al arrancar, el servidor imprime `Almacenamiento de datos: sqlite | firestore`.
+
+### Conectar Firebase / Firestore
+
+1. En [console.firebase.google.com](https://console.firebase.google.com) crea un proyecto y activa **Firestore Database** (modo producción).
+2. **Configuración del proyecto → Cuentas de servicio → Generar nueva clave privada**. Se descarga un JSON.
+3. Guarda ese archivo como **`serviceAccountKey.json`** en la raíz del proyecto (ya está en `.gitignore`, nunca se sube al repo).
+   - Alternativas: variable `GOOGLE_APPLICATION_CREDENTIALS=/ruta/al.json` o `FIREBASE_SERVICE_ACCOUNT='{...json...}'`.
+4. Ejecuta `npm run seed` para crear usuarios y datos de ejemplo en Firestore, y luego `npm start`.
+5. (Opcional) Publica las reglas de [`firestore.rules`](firestore.rules): bloquean el acceso directo de clientes, ya que todo pasa por el servidor.
+
+Colecciones que crea en Firestore: `usuarios`, `medicamentos`, `configuracion`.
 
 ## Usuarios de acceso (creados por `npm run seed`)
 
@@ -57,18 +80,23 @@ En la sección **Reportes** (botón *Descargar Excel*, archivos `.xlsx`):
 ## Estructura
 
 ```
-server.js       API REST + servidor web (Express)
-db.js           esquema y conexión SQLite
-lib.js          cálculo de estados de vencimiento y márgenes
-reportes.js     generación de archivos Excel (ExcelJS)
-permisos.js     matriz de permisos por rol
-seed.js         datos iniciales
-public/         interfaz web (HTML/CSS/JS sin framework)
-data/           base de datos local (no se versiona)
+server.js            API REST + servidor web (Express)
+store.js             elige el backend de datos (sqlite / firestore)
+stores/sqlite.js     implementación sobre SQLite
+stores/firestore.js  implementación sobre Cloud Firestore
+firebase.js          inicializa Firebase Admin si hay credenciales
+db.js                esquema y conexión SQLite
+lib.js               cálculo de estados de vencimiento y márgenes
+reportes.js          generación de archivos Excel (ExcelJS)
+permisos.js          matriz de permisos por rol
+seed.js              datos iniciales
+firestore.rules      reglas de seguridad de Firestore
+public/              interfaz web (HTML/CSS/JS sin framework)
+data/                base de datos local SQLite (no se versiona)
 ```
 
 ## Notas
 
-- La base de datos se guarda en `data/farmacia.db` (ignorada por git).
+- `serviceAccountKey.json`, `.env` y `data/` están en `.gitignore` y no se suben al repo.
 - Sesiones en memoria: al reiniciar el servidor hay que volver a iniciar sesión.
 - Para producción, definir `SESSION_SECRET` y `PORT` como variables de entorno y servir tras HTTPS.

@@ -19,6 +19,10 @@ data/
 .env
 .env.local
 
+# Credenciales de Firebase (NUNCA subir esto al repo)
+serviceAccountKey.json
+*-firebase-adminsdk-*.json
+
 # Editores
 .vscode/
 .idea/
