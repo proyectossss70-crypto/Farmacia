@@ -29,7 +29,10 @@ label input, label select { margin-top: .3rem; }
 /* LOGIN */
 .login-wrap { min-height: 100vh; display: grid; place-items: center; padding: 1rem; }
 .login-card { background: var(--card); padding: 2rem; border-radius: 14px; box-shadow: 0 10px 40px rgba(0,0,0,.08); width: 100%; max-width: 340px; text-align: center; }
-.login-logo { font-size: 2.5rem; }
+.ico { width: 20px; height: 20px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.login-logo { color: var(--green); line-height: 0; margin-bottom: .2rem; }
+.login-logo .ico { width: 44px; height: 44px; stroke-width: 1.5; }
+.brand .ico { width: 22px; color: var(--green); }
 .login-card h1 { margin: .3rem 0; }
 .login-card label { text-align: left; margin-top: 1rem; }
 .login-card button { width: 100%; margin-top: 1rem; }
@@ -37,7 +40,7 @@ label input, label select { margin-top: .3rem; }
 /* APP LAYOUT */
 #app { display: flex; min-height: 100vh; }
 .sidebar { width: 230px; background: #fff; border-right: 1px solid var(--border); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
-.brand { font-weight: 700; font-size: 1.15rem; padding: 1.2rem 1.1rem; border-bottom: 1px solid var(--border); }
+.brand { font-weight: 700; font-size: 1.15rem; padding: 1.2rem 1.1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: .5rem; }
 #nav { display: flex; flex-direction: column; padding: .6rem; gap: 2px; flex: 1; }
 #nav a { display: flex; gap: .6rem; align-items: center; padding: .65rem .7rem; border-radius: 8px; cursor: pointer; color: var(--text); font-size: .95rem; text-decoration: none; }
 #nav a:hover { background: var(--bg); }
