@@ -67,10 +67,11 @@ $('#login-form').addEventListener('submit', async (e) => {
   });
 });
 
-$('#logout').addEventListener('click', async () => {
+async function cerrarSesion() {
   await api('/logout', { method: 'POST' });
   location.reload();
-});
+}
+['#logout', '#logout-m'].forEach((s) => $(s) && $(s).addEventListener('click', cerrarSesion));
 
 async function boot() {
   try {
@@ -359,10 +360,12 @@ $('#config-form').addEventListener('submit', async (e) => {
 
 // ---------- Helpers UI ----------
 function tabla(headers, rows) {
+  const cell = (c, i, len) => {
+    const act = i === len - 1 && headers[i] === '';
+    return `<td class="${act ? 'actions' : ''}" data-label="${esc(headers[i] || '')}">${c}</td>`;
+  };
   return `<table><thead><tr>${headers.map((h) => `<th>${h}</th>`).join('')}</tr></thead>
-    <tbody>${rows
-      .map((r) => `<tr>${r.map((c, i) => `<td class="${i === r.length - 1 && headers[i] === '' ? 'actions' : ''}">${c}</td>`).join('')}</tr>`)
-      .join('')}</tbody></table>`;
+    <tbody>${rows.map((r) => `<tr>${r.map((c, i) => cell(c, i, r.length)).join('')}</tr>`).join('')}</tbody></table>`;
 }
 
 function badge(m) {

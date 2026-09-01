@@ -2,11 +2,12 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
   <title>Farmacia · Gestión</title>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
-  <link rel="stylesheet" href="styles.css?v=6" />
+  <link rel="stylesheet" href="styles.css?v=7" />
 </head>
 <body>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -35,6 +36,10 @@
 
   <!-- APP -->
   <div id="app" hidden>
+    <header id="topbar">
+      <div class="brand"><svg class="ico"><use href="#i-logo"/></svg> <span>Farmacia</span></div>
+      <button id="logout-m" class="link">Salir</button>
+    </header>
     <aside class="sidebar">
       <div class="brand"><svg class="ico"><use href="#i-logo"/></svg> <span>Farmacia</span></div>
       <nav id="nav">
@@ -122,6 +127,6 @@
 
   <div id="toast" class="toast" hidden></div>
 
-  <script src="app.js?v=6"></script>
+  <script src="app.js?v=7"></script>
 </body>
 </html>
