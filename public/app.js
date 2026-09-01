@@ -70,7 +70,10 @@ function startApp(r) {
   $('#login').hidden = true;
   $('#app').hidden = false;
 
-  $('#user-box').innerHTML = `<strong>${esc(ME.nombre)}</strong><br><span class="rol">${esc(ME.rol)}</span>`;
+  const inic = (ME.nombre || ME.usuario || '?').trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+  $('#user-box').innerHTML =
+    `<span class="avatar">${esc(inic)}</span>` +
+    `<span class="who"><strong>${esc(ME.nombre)}</strong><span class="rol">${esc(ME.rol)}</span></span>`;
 
   // Ocultar secciones sin permiso
   const visible = {
@@ -237,7 +240,7 @@ async function loadReportes() {
   $('#reportes-list').innerHTML = list
     .map(
       (r) => `<div class="reporte-card"><h4>${esc(r.nombre)}</h4>
-        <a href="/api/reportes/${r.id}.xlsx"><button class="primary">⬇️ Descargar Excel</button></a></div>`
+        <a href="/api/reportes/${r.id}.xlsx"><button class="primary"><svg class="ico"><use href="#i-download"/></svg> Descargar Excel</button></a></div>`
     )
     .join('');
 }

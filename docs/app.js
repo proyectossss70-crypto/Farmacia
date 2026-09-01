@@ -96,7 +96,10 @@ onAuthStateChanged(auth, async (user) => {
     PERM = PERMISOS[d.rol] || {};
     $('#login').hidden = true;
     $('#app').hidden = false;
-    $('#user-box').innerHTML = `<strong>${esc(ME.nombre)}</strong><br><span class="rol">${esc(ME.rol)}</span>`;
+    const inic = (ME.nombre || ME.email || '?').trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+    $('#user-box').innerHTML =
+      `<span class="avatar">${esc(inic)}</span>` +
+      `<span class="who"><strong>${esc(ME.nombre)}</strong><span class="rol">${esc(ME.rol)}</span></span>`;
     const vis = {
       dashboard: true, inventario: !!PERM.inventario, reportes: !!PERM.reportes,
       usuarios: !!PERM.usuarios, configuracion: !!PERM.config,
@@ -284,7 +287,7 @@ async function loadReportes() {
     ['completo', 'Reporte completo (todo)'],
   ];
   $('#reportes-list').innerHTML = defs.map(([id, n]) =>
-    `<div class="reporte-card"><h4>${esc(n)}</h4><button class="primary" data-rep="${id}">⬇️ Descargar Excel</button></div>`).join('');
+    `<div class="reporte-card"><h4>${esc(n)}</h4><button class="primary" data-rep="${id}"><svg class="ico"><use href="#i-download"/></svg> Descargar Excel</button></div>`).join('');
   $$('#reportes-list [data-rep]').forEach((b) => b.addEventListener('click', () => descargarExcel(b.dataset.rep)));
 }
 
