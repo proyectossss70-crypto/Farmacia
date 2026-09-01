@@ -3,10 +3,17 @@
 
 # Logs
 *.log
+npm-debug.log*
 
 # Dependencias
 node_modules/
 vendor/
+
+# Base de datos local
+data/
+*.db
+*.db-wal
+*.db-shm
 
 # Entorno
 .env
